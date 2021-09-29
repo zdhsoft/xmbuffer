@@ -1,6 +1,6 @@
 {
     "name": "xmbuffer",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "description": "这是一个动态buffer读写数据的库",
     "main": "dist/index.js",
     "scripts": {
@@ -15,12 +15,12 @@
     "author": "zdhsoft",
     "license": "MIT",
     "devDependencies": {
-        "@types/node": "^14.17.17",
-        "@typescript-eslint/eslint-plugin": "^4.30.0",
-        "@typescript-eslint/parser": "^4.30.0",
+        "@types/node": "^14.17.19",
+        "@typescript-eslint/eslint-plugin": "^4.32.0",
+        "@typescript-eslint/parser": "^4.32.0",
         "eslint": "^7.32.0"
     },
     "dependencies": {
-        "xmcommon": "^0.9.2"
+        "xmcommon": "^0.9.6"
     }
 }

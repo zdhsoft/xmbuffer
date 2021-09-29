@@ -315,6 +315,10 @@ class XPackageReader extends XBuffer {
         }
         return (this.m_pos + paramBytes) <= this.m_valid_pos;
     }
+    /** 还可以读取的字节数 */
+    get canReadBytes() {
+        return this.m_valid_pos - this.m_pos;
+    }
     /** 是否可读写8位整数 */
     isCanReadInt8() {
         return this.isCanRead(xbuffer_const_1.EnumBufferSize.int8);
@@ -421,7 +425,15 @@ class XPackageReader extends XBuffer {
         this.m_pos += xbuffer_const_1.EnumBufferSize.double;
         return ret;
     }
-    readBuffer(paramBytes) {
+    /**
+     * 读取buffer
+     * - 当paramNewCopy为true的时候，表示重新分配一个buffer，然后把数据读到的新的buffer中，多了一个数据复制的过程
+     * - 当paramNewCopy不为true的时候，表示直接从当前buffer中slice一个buffer对象出来，但是数据还是原有buffer的数据，少一个数据复制过程
+     * @param paramBytes 要读取的字节数
+     * @param paramNewCopy 是要创建新的buffer对象复制出来
+     * @returns 返回读取结果
+     */
+    readBuffer(paramBytes, paramNewCopy = true) {
         let ret = xbuffer_const_1.EnumErrBuffer.OK;
         let data = null;
         do {
@@ -437,8 +449,13 @@ class XPackageReader extends XBuffer {
                 ret = xbuffer_const_1.EnumErrBuffer.READ_BYTES_NOT_ENOUGH;
                 break;
             }
-            data = Buffer.allocUnsafe(paramBytes);
-            this.m_data.copy(data, 0, this.m_pos, this.m_pos + paramBytes);
+            if (paramNewCopy) {
+                data = Buffer.allocUnsafe(paramBytes);
+                this.m_data.copy(data, 0, this.m_pos, this.m_pos + paramBytes);
+            }
+            else {
+                data = this.m_data.slice(this.m_pos, this.m_pos + paramBytes);
+            }
             this.m_pos += paramBytes;
         } while (false);
         return { ret, data };

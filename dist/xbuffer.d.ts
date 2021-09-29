@@ -120,6 +120,8 @@ export declare class XPackageReader extends XBuffer {
      */
     constructor(paramCapacity?: number, paramFillByte?: number);
     isCanRead(paramBytes: number): boolean;
+    /** 还可以读取的字节数 */
+    get canReadBytes(): number;
     /** 是否可读写8位整数 */
     isCanReadInt8(): boolean;
     /** 是否可读写16位整数 */
@@ -141,7 +143,15 @@ export declare class XPackageReader extends XBuffer {
     appendData(paramData: Buffer, paramStartPos?: number, paramEndPos?: number): EnumErrBuffer;
     readFloat(): number;
     readDouble(): number;
-    readBuffer(paramBytes: number): {
+    /**
+     * 读取buffer
+     * - 当paramNewCopy为true的时候，表示重新分配一个buffer，然后把数据读到的新的buffer中，多了一个数据复制的过程
+     * - 当paramNewCopy不为true的时候，表示直接从当前buffer中slice一个buffer对象出来，但是数据还是原有buffer的数据，少一个数据复制过程
+     * @param paramBytes 要读取的字节数
+     * @param paramNewCopy 是要创建新的buffer对象复制出来
+     * @returns 返回读取结果
+     */
+    readBuffer(paramBytes: number, paramNewCopy?: boolean): {
         ret: EnumErrBuffer;
         data: Buffer | null;
     };
