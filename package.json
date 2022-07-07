@@ -1,6 +1,6 @@
 {
     "name": "xmbuffer",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "这是一个动态buffer读写数据的库",
     "main": "dist/index.js",
     "scripts": {
@@ -14,6 +14,14 @@
     "keywords": [
         "xmbuffer"
     ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zdhsoft/xmcommon.git"
+    },
+    "bugs": {
+        "url": "https://github.com/zdhsoft/xmcommon/issues"
+    },
+    "homepage": "https://github.com/zdhsoft/xmcommon#readme",
     "author": "zdhsoft",
     "license": "MIT",
     "devDependencies": {
@@ -29,5 +37,9 @@
     },
     "dependencies": {
         "xmcommon": "^1.0.4"
+    },
+    "engines": {
+        "node": ">=8.0.0",
+        "npm": ">=6.0.0"
     }
 }
