@@ -16,12 +16,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/zdhsoft/xmcommon.git"
+        "url": "git+https://github.com/zdhsoft/xmbuffer.git"
     },
     "bugs": {
-        "url": "https://github.com/zdhsoft/xmcommon/issues"
+        "url": "https://github.com/zdhsoft/xmbuffer/issues"
     },
-    "homepage": "https://github.com/zdhsoft/xmcommon#readme",
+    "homepage": "https://github.com/zdhsoft/xmbuffer#readme",
     "author": "zdhsoft",
     "license": "MIT",
     "devDependencies": {
