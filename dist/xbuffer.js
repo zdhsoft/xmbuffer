@@ -52,7 +52,7 @@ class XBuffer {
      * @param paramFillByte 填充的字节，只支待0-255的数字，否则视为没有传入
      */
     ensureCapacity(paramCapacity, paramFillByte) {
-        if ((!Number.isSafeInteger(paramCapacity) || paramCapacity < 0)) {
+        if (!Number.isSafeInteger(paramCapacity) || paramCapacity < 0) {
             return xbuffer_const_1.EnumErrBuffer.INVALID_CAPACITY_VALUE;
         }
         if (this.capacity >= paramCapacity) {
@@ -88,7 +88,7 @@ class XBuffer {
         // 将容量设为指定块的整数倍
         const mod = newCapacity % xbuffer_const_1.CAPACITY_BLOCK_SIZE;
         if (mod > 0) {
-            newCapacity += (xbuffer_const_1.CAPACITY_BLOCK_SIZE - mod);
+            newCapacity += xbuffer_const_1.CAPACITY_BLOCK_SIZE - mod;
         }
         // 如果计算出来的容量，大于最大容量, 则将容量设为最大容量
         if (newCapacity > buffer_1.constants.MAX_LENGTH) {
@@ -96,7 +96,9 @@ class XBuffer {
         }
         const old_data = this.m_data;
         try {
-            const new_data = XBuffer.checkFillByte(paramFillByte) ? Buffer.alloc(newCapacity, paramFillByte) : Buffer.allocUnsafe(newCapacity);
+            const new_data = XBuffer.checkFillByte(paramFillByte)
+                ? Buffer.alloc(newCapacity, paramFillByte)
+                : Buffer.allocUnsafe(newCapacity);
             this.m_data = new_data;
         }
         catch (e) {
@@ -157,7 +159,7 @@ class XBuffer {
             capacity: this.capacity,
             pos: this.m_pos,
             valid_pos: this.m_valid_pos,
-            data: this.m_data
+            data: this.m_data,
         };
     }
 }
@@ -178,7 +180,7 @@ class XPackageWriter extends XBuffer {
         if (paramBytes < 1) {
             return false;
         }
-        return (this.m_pos + paramBytes) <= this.capacity;
+        return this.m_pos + paramBytes <= this.capacity;
     }
     /** 是否可读写8位整数 */
     isCanWriteInt8() {
@@ -313,7 +315,7 @@ class XPackageReader extends XBuffer {
         if (paramBytes < 1) {
             return false;
         }
-        return (this.m_pos + paramBytes) <= this.m_valid_pos;
+        return this.m_pos + paramBytes <= this.m_valid_pos;
     }
     /** 还可以读取的字节数 */
     get canReadBytes() {

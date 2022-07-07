@@ -22,7 +22,7 @@ export class XBuffer {
      * @param paramCapacity 初始化的容量, 如果不是有效的安全整数，则使用默认值
      * @param paramFillByte 填充的字节，只支待0-255的数字，否则视为没有传入
      */
-    public constructor(paramCapacity ?: number, paramFillByte ?: number) {
+    public constructor(paramCapacity?: number, paramFillByte?: number) {
         let cap = DEFAULT_CAPACITY;
         if (Number.isSafeInteger(paramCapacity)) {
             cap = paramCapacity as number;
@@ -39,11 +39,11 @@ export class XBuffer {
      *  - true 表示是有效的填充字节
      *  - false 表示不是有效的填充字节
      */
-    public static checkFillByte(paramFillByte ?: number): boolean {
+    public static checkFillByte(paramFillByte?: number): boolean {
         if (!Number.isSafeInteger(paramFillByte)) {
             return false;
         }
-        return (paramFillByte as number)>= 0 && (paramFillByte as number)<= 255;
+        return (paramFillByte as number) >= 0 && (paramFillByte as number) <= 255;
     }
 
     /**
@@ -51,8 +51,8 @@ export class XBuffer {
      * @param paramCapacity 确的容量
      * @param paramFillByte 填充的字节，只支待0-255的数字，否则视为没有传入
      */
-    public ensureCapacity(paramCapacity: number, paramFillByte ?: number): EnumErrBuffer {
-        if ((!Number.isSafeInteger(paramCapacity) || paramCapacity < 0)) {
+    public ensureCapacity(paramCapacity: number, paramFillByte?: number): EnumErrBuffer {
+        if (!Number.isSafeInteger(paramCapacity) || paramCapacity < 0) {
             return EnumErrBuffer.INVALID_CAPACITY_VALUE;
         }
         if (this.capacity >= paramCapacity) {
@@ -70,7 +70,7 @@ export class XBuffer {
      *  - 0 表示扩展容量成功
      *  -
      */
-    private expandCapacity(paramMinCapacity: number, paramFillByte ?: number): EnumErrBuffer {
+    private expandCapacity(paramMinCapacity: number, paramFillByte?: number): EnumErrBuffer {
         const nowCapacity = this.capacity;
         // 如果当前空量满足要求，
         if (nowCapacity >= paramMinCapacity) {
@@ -84,12 +84,12 @@ export class XBuffer {
         const doubleNowCapacity = nowCapacity * 2;
         let newCapacity = paramMinCapacity;
         if (newCapacity < doubleNowCapacity) {
-            newCapacity =  doubleNowCapacity;
+            newCapacity = doubleNowCapacity;
         }
         // 将容量设为指定块的整数倍
         const mod = newCapacity % CAPACITY_BLOCK_SIZE;
         if (mod > 0) {
-            newCapacity += (CAPACITY_BLOCK_SIZE - mod);
+            newCapacity += CAPACITY_BLOCK_SIZE - mod;
         }
         // 如果计算出来的容量，大于最大容量, 则将容量设为最大容量
         if (newCapacity > constants.MAX_LENGTH) {
@@ -98,9 +98,11 @@ export class XBuffer {
 
         const old_data = this.m_data;
         try {
-            const new_data = XBuffer.checkFillByte(paramFillByte)? Buffer.alloc(newCapacity, paramFillByte):Buffer.allocUnsafe(newCapacity);
+            const new_data = XBuffer.checkFillByte(paramFillByte)
+                ? Buffer.alloc(newCapacity, paramFillByte)
+                : Buffer.allocUnsafe(newCapacity);
             this.m_data = new_data;
-        }catch(e) {
+        } catch (e) {
             return EnumErrBuffer.ALLOC_BUFFER_FAIL;
         }
 
@@ -140,7 +142,7 @@ export class XBuffer {
         if (!Number.isSafeInteger(paramNewPos)) {
             return EnumErrBuffer.INVALID_NEW_POS;
         }
-        if (paramNewPos < 0 || paramNewPos>= this.capacity) {
+        if (paramNewPos < 0 || paramNewPos >= this.capacity) {
             return EnumErrBuffer.OUT_OF_POS;
         }
 
@@ -158,12 +160,12 @@ export class XBuffer {
         this.m_pos = paramNewPos;
     }
 
-    public toJSON(): { data: Buffer, pos: number, capacity: number, valid_pos: number } {
+    public toJSON(): { data: Buffer; pos: number; capacity: number; valid_pos: number } {
         return {
-            capacity : this.capacity,
-            pos      : this.m_pos,
+            capacity: this.capacity,
+            pos: this.m_pos,
             valid_pos: this.m_valid_pos,
-            data     : this.m_data
+            data: this.m_data,
         };
     }
 }
@@ -174,7 +176,7 @@ export class XPackageWriter extends XBuffer {
      * @param paramCapacity 初始化的容量, 如果不是有效的安全整数，则使用默认值
      * @param paramFillByte 填充的字节，只支待0-255的数字，否则视为没有传入
      */
-    public constructor(paramCapacity ?: number, paramFillByte ?: number){
+    public constructor(paramCapacity?: number, paramFillByte?: number) {
         super(paramCapacity, paramFillByte);
     }
 
@@ -185,7 +187,7 @@ export class XPackageWriter extends XBuffer {
         if (paramBytes < 1) {
             return false;
         }
-        return (this.m_pos + paramBytes) <= this.capacity;
+        return this.m_pos + paramBytes <= this.capacity;
     }
 
     /** 是否可读写8位整数 */
@@ -263,7 +265,7 @@ export class XPackageWriter extends XBuffer {
             this.writeInt32(high);
             this.writeUInt32(low);
         } else {
-            const v= paramValue;
+            const v = paramValue;
             const low = v % 0x100000000;
             const high = (v - low) / 0x100000000;
             this.writeInt32(high);
@@ -278,7 +280,6 @@ export class XPackageWriter extends XBuffer {
         this.m_valid_pos = this.m_pos;
     }
 
-
     public writeDouble(paramValue: number): void {
         this.ensureCapacity(this.m_pos + EnumBufferSize.double);
         this.m_data.writeDoubleBE(paramValue, this.m_pos);
@@ -286,7 +287,7 @@ export class XPackageWriter extends XBuffer {
         this.m_valid_pos = this.m_pos;
     }
 
-    public writeBuffer(paramBuffer: Buffer, paramBytes ?:number): void {
+    public writeBuffer(paramBuffer: Buffer, paramBytes?: number): void {
         const bytes = Number.isSafeInteger(paramBytes) ? (paramBytes as number) : paramBuffer.length;
         this.ensureCapacity(this.m_pos + bytes);
         paramBuffer.copy(this.m_data, this.m_pos, 0, bytes);
@@ -303,11 +304,11 @@ export class XPackageWriter extends XBuffer {
         this.writeBuffer(paramBuffer);
     }
 
-    public writeString(paramString: string, paramEncoding: BufferEncoding ='utf8'): void {
+    public writeString(paramString: string, paramEncoding: BufferEncoding = 'utf8'): void {
         this.writePackBuffer(Buffer.from(paramString, paramEncoding));
     }
 
-    public getBufferData() : Buffer {
+    public getBufferData(): Buffer {
         return this.m_data.slice(0, this.m_pos);
     }
 }
@@ -322,7 +323,7 @@ export class XPackageReader extends XBuffer {
      * @param paramCapacity 初始化的容量, 如果不是有效的安全整数，则使用默认值
      * @param paramFillByte 填充的字节，只支待0-255的数字，否则视为没有传入
      */
-    public constructor(paramCapacity ?: number, paramFillByte ?: number){
+    public constructor(paramCapacity?: number, paramFillByte?: number) {
         super(paramCapacity, paramFillByte);
     }
 
@@ -333,7 +334,7 @@ export class XPackageReader extends XBuffer {
         if (paramBytes < 1) {
             return false;
         }
-        return (this.m_pos + paramBytes) <= this.m_valid_pos;
+        return this.m_pos + paramBytes <= this.m_valid_pos;
     }
     /** 还可以读取的字节数 */
     public get canReadBytes(): number {
@@ -391,12 +392,12 @@ export class XPackageReader extends XBuffer {
             this.m_data.copy(this.m_data, 0, this.m_pos, this.m_valid_pos);
             this.m_pos -= paramBytes;
             this.m_valid_pos -= paramBytes;
-        // eslint-disable-next-line no-constant-condition
+            // eslint-disable-next-line no-constant-condition
         } while (false);
         return ret;
     }
     /** 追加数据 */
-    public appendData(paramData: Buffer, paramStartPos ?: number, paramEndPos ?: number): EnumErrBuffer {
+    public appendData(paramData: Buffer, paramStartPos?: number, paramEndPos?: number): EnumErrBuffer {
         let ret = EnumErrBuffer.OK;
         do {
             if (!Buffer.isBuffer(paramData)) {
@@ -405,8 +406,8 @@ export class XPackageReader extends XBuffer {
             }
             const byteCount = paramData.length;
 
-            const startPos = Number.isSafeInteger(paramStartPos)? (paramStartPos as number) : 0;
-            const endPos   = Number.isSafeInteger(paramEndPos)? (paramEndPos as number): byteCount;
+            const startPos = Number.isSafeInteger(paramStartPos) ? (paramStartPos as number) : 0;
+            const endPos = Number.isSafeInteger(paramEndPos) ? (paramEndPos as number) : byteCount;
             if (endPos < startPos || startPos < 0) {
                 // 如果要读取的pos超出范围
                 ret = EnumErrBuffer.OUT_OF_POS;
@@ -430,7 +431,7 @@ export class XPackageReader extends XBuffer {
             // 检查容量，是否足够
             const minCapacity = this.m_valid_pos + readBytes;
             ret = this.ensureCapacity(minCapacity);
-            if(ret !== EnumErrBuffer.OK) {
+            if (ret !== EnumErrBuffer.OK) {
                 break;
             }
             // 复制数据
@@ -461,9 +462,9 @@ export class XPackageReader extends XBuffer {
      * @param paramNewCopy 是要创建新的buffer对象复制出来
      * @returns 返回读取结果
      */
-    public readBuffer(paramBytes: number, paramNewCopy = true): {ret: EnumErrBuffer, data :Buffer | null } {
+    public readBuffer(paramBytes: number, paramNewCopy = true): { ret: EnumErrBuffer; data: Buffer | null } {
         let ret = EnumErrBuffer.OK;
-        let data : Buffer | null = null;
+        let data: Buffer | null = null;
         do {
             if (!Number.isSafeInteger(paramBytes)) {
                 ret = EnumErrBuffer.PARAM_IS_NOT_SAFE_INT;
@@ -488,14 +489,13 @@ export class XPackageReader extends XBuffer {
             this.m_pos += paramBytes;
         } while (false);
 
-        return {ret, data};
+        return { ret, data };
     }
 
-    public readPackBuffer(): {ret: EnumErrBuffer, data :Buffer | null } {
+    public readPackBuffer(): { ret: EnumErrBuffer; data: Buffer | null } {
         const bytes = this.readInt32();
         return this.readBuffer(bytes);
     }
-
 
     public readInt8(): number {
         const ret = this.m_data.readInt8(this.m_pos);
@@ -508,7 +508,6 @@ export class XPackageReader extends XBuffer {
         this.m_pos += EnumBufferSize.int8;
         return ret;
     }
-
 
     public readInt16(): number {
         const ret = this.m_data.readInt16BE(this.m_pos);
@@ -533,7 +532,7 @@ export class XPackageReader extends XBuffer {
     }
     public readInt64(): number {
         const high = this.readInt32();
-        const low  = this.readUInt32();
+        const low = this.readUInt32();
 
         const sign = high < 0;
         if (sign) {
@@ -543,15 +542,14 @@ export class XPackageReader extends XBuffer {
         }
     }
 
-    public readString(paramEncoding: BufferEncoding ='utf8'): {ret: EnumErrBuffer, str: string | null} {
+    public readString(paramEncoding: BufferEncoding = 'utf8'): { ret: EnumErrBuffer; str: string | null } {
         const r = this.readPackBuffer();
-        let str : string | null = null;
+        let str: string | null = null;
         let ret = r.ret;
         if (r.ret === EnumErrBuffer.OK) {
             ret = r.ret;
             str = (r.data as Buffer).toString(paramEncoding);
         }
-        return {ret, str};
+        return { ret, str };
     }
-
 }
