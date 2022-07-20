@@ -24,6 +24,7 @@
     "files": [
         "dist"
     ],
+    "types": "dist/index.d.ts",
     "homepage": "https://github.com/zdhsoft/xmbuffer#readme",
     "author": "zdhsoft",
     "license": "MIT",
